@@ -10,6 +10,14 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
+
+/* TODO: Get new cables
+TODO: CHANGE BACK LEFT MOTOR 
+TODO: CONFIRM MOTOR PORTS & DEFINITIONS
+
+TODO: CONFIRM MOTOR INVERSIONS
+
+*/
 #include "vex.h"
 
 using namespace vex;
@@ -53,9 +61,12 @@ void usercontrol(void) {
     }
 
     fwdVal = Controller.Axis3.position();
-    turnVal = Controller.Axis4.position();
-    Drivetrain.arcade(fwdVal, turnVal * TURN_MULTIPLIER);
-    
+    turnVal = Controller.Axis1.position() * TURN_MULTIPLIER;
+    Drivetrain.arcade(fwdVal, turnVal);
+    // Drivetrain.drive(forward);
+
+
+
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
