@@ -1,18 +1,14 @@
 using namespace vex;
 
 extern brain Brain;
-extern motor backLeftMotor;
-extern motor backRightMotor;
-extern motor frontLeftMotor;
-extern motor frontRightMotor;
-
-
-extern motor_group LeftDriveSmart;
+extern motor FrontRightMotor;
+extern motor BackRightMotor;
 extern motor_group RightDriveSmart;
-
+extern motor FrontLeftMotor;
+extern motor BackLeftMotor;
+extern motor_group LeftDriveSmart;
 extern drivetrain Drivetrain;
 extern controller Controller;
-
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
  *
