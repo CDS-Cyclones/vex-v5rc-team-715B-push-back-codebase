@@ -32,6 +32,12 @@ competition Competition;
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  BackLeftMotor.setBrake(brake);
+  BackRightMotor.setBrake(brake);
+  FrontLeftMotor.setBrake(brake);
+  FrontRightMotor.setBrake(brake);
+  LeftDriveSmart.setStopping(brake);
+  RightDriveSmart.setStopping(brake);
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
