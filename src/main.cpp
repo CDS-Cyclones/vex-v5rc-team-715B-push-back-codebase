@@ -18,6 +18,10 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
+double accel = 0;
+double turn = 0;
+const double_t turnMultiplier = 0.5;
+
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -34,11 +38,12 @@ void pre_auton(void) {
   vexcodeInit();
   BackLeftMotor.setBrake(brake);
   BackRightMotor.setBrake(brake);
-  FrontLeftMotor.setBrake(brake);
-  FrontRightMotor.setBrake(brake);
-  LeftDriveSmart.setStopping(brake);
-  RightDriveSmart.setStopping(brake);
-
+  IntakeMotorGroup.setStopping(coast);
+  InertialSensor.calibrate(2);
+  while(InertialSensor.isCalibrating()) {
+   Brain.Screen.print("Calibrating Inertial");
+  }
+  Brain.Screen.clearScreen();
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -80,8 +85,17 @@ void usercontrol(void) {
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
+    accel = Controller.Axis3.position();
+    turn = Controller.Axis1.position();
+    Drivetrain.arcade(accel, turn * turnMultiplier);
 
-    Drivetrain.arcade(Controller.Axis3.position(), Controller.Axis1.position());
+    if(Controller.ButtonX.pressing()) {
+      IntakeMotorGroup.spin(forward);
+    } else if(Controller.ButtonB.pressing()) {
+      IntakeMotorGroup.spin(reverse);
+    } else {
+      IntakeMotorGroup.stop();
+    }
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
