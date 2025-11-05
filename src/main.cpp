@@ -44,6 +44,12 @@ void pre_auton(void) {
    Brain.Screen.print("Calibrating Inertial");
   }
   Brain.Screen.clearScreen();
+
+
+  //TODO: see if this works lmao, if not just set it in the spinning command.
+  // 45 percent, ~5 watts 
+  IntakeMotorGroup.setVelocity(45, percent);
+
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
