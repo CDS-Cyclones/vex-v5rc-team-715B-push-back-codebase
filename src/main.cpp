@@ -20,8 +20,7 @@ competition Competition;
 // define your global instances of motors and other devices here
 double accel = 0;
 double turn = 0;
-const double_t turnMultiplier = 0.5;
-
+const double_t turnMultiplier = 1;
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -33,27 +32,35 @@ const double_t turnMultiplier = 0.5;
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 
+void calibrateInertial() {
+  InertialSensor.setHeading(0, deg);
+  Drivetrain.setHeading(0, deg);
+  InertialSensor.calibrate();
+  while (InertialSensor.isCalibrating()) {
+    Brain.Screen.setCursor(1, 1);
+    Controller.Screen.setCursor(1, 1);
+    Controller.Screen.print("Calibrating Inertial... Do NOT move.");
+    Brain.Screen.print("Calibrating Inertial... Do NOT move.");
+    wait(100, msec);
+  }
+  Brain.Screen.clearScreen();
+  Controller.Screen.clearLine();
+}
+
 void pre_auton(void) {
-  // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+
+  // set brake modes & velocities
   BackLeftMotor.setBrake(brake);
   BackRightMotor.setBrake(brake);
   IntakeMotorGroup.setStopping(coast);
-  Drivetrain.setTurnVelocity(200, rpm);
-  InertialSensor.calibrate(2);
-  while(InertialSensor.isCalibrating()) {
-   Brain.Screen.print("Calibrating Inertial, DO NOT MOVE");
-    wait(2000, msec);
-  }
-  Brain.Screen.clearScreen();
-
-
-  //TODO: see if this works lmao, if not just set it in the spinning command.
-  // 45 percent, ~5 watts 
+  Drivetrain.setDriveVelocity(100, percent);
+  Drivetrain.setTurnVelocity(100, percent);
+  Drivetrain.setTimeout(3, seconds);
   IntakeMotorGroup.setVelocity(45, percent);
 
-  // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
+
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -66,15 +73,21 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
+void telemetry(void) {
+  Brain.Screen.setCursor(1, 1);
+  Controller.Screen.setCursor(1, 1);
+  Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
+  Controller.Screen.print("Heading: %.2f", InertialSensor.heading());
+}
+
 void autonomous(void) {
-Drivetrain.turnFor(turnType::right, 180, rotationUnits::deg, 100, rpm, true);
-    while(1) {
-    Brain.Screen.setCursor(1,1);
-      Brain.Screen.print("Autonomous Running");
-      Brain.Screen.setCursor(3,1);
-    Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
-    wait(100, msec);
-    Brain.Screen.clearScreen();
+  calibrateInertial();
+  
+
+
+  // Telemetry loop
+  while (true) {
+    telemetry();
   }
 }
 
@@ -89,24 +102,26 @@ Drivetrain.turnFor(turnType::right, 180, rotationUnits::deg, 100, rpm, true);
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  // User control code here, inside the loop
   while (1) {
-
-
-
-    Brain.Screen.setCursor(1,1);
-    Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
-    accel = Controller.Axis1.position();
-    turn = Controller.Axis3.position();
+ 
+    // Drive control
+    accel = Controller.Axis3.position();
+    turn = Controller.Axis1.position();
     Drivetrain.arcade(accel, turn * turnMultiplier);
 
+    // Telemetry loop
+    telemetry();
 
+    // Inertial reset heading
+    if (Controller.ButtonY.pressing()) {
+      InertialSensor.resetHeading();
+    }
 
-
-    if(Controller.ButtonL1.pressing()) {
+    // Intake Control
+    if (Controller.ButtonL1.pressing()) {
       IntakeMotorGroup.setVelocity(45, percent);
       IntakeMotorGroup.spin(forward);
-    } else if(Controller.ButtonL2.pressing()) {
+    } else if (Controller.ButtonL2.pressing()) {
       IntakeMotorGroup.setVelocity(100, percent);
       IntakeMotorGroup.spin(reverse);
     } else {
@@ -114,27 +129,22 @@ void usercontrol(void) {
       IntakeMotorGroup.setVelocity(45, percent);
     }
 
-
-
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
+    wait(20, msec);
     Brain.Screen.clearScreen();
+    Controller.Screen.clearLine();
   }
 }
 
-//
-// Main will set up the competition functions and callbacks.
-//
 int main() {
+  // Run the pre-autonomous function.
+  pre_auton();
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
-
-  // Run the pre-autonomous function.
-  pre_auton();
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
     wait(100, msec);
   }
+
 }
