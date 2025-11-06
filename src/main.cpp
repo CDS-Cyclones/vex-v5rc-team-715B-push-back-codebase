@@ -39,9 +39,11 @@ void pre_auton(void) {
   BackLeftMotor.setBrake(brake);
   BackRightMotor.setBrake(brake);
   IntakeMotorGroup.setStopping(coast);
+  Drivetrain.setTurnVelocity(200, rpm);
   InertialSensor.calibrate(2);
   while(InertialSensor.isCalibrating()) {
-   Brain.Screen.print("Calibrating Inertial");
+   Brain.Screen.print("Calibrating Inertial, DO NOT MOVE");
+    wait(2000, msec);
   }
   Brain.Screen.clearScreen();
 
@@ -65,9 +67,15 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
+Drivetrain.turnFor(turnType::right, 180, rotationUnits::deg, 100, rpm, true);
+    while(1) {
+    Brain.Screen.setCursor(1,1);
+      Brain.Screen.print("Autonomous Running");
+      Brain.Screen.setCursor(3,1);
+    Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
+    wait(100, msec);
+    Brain.Screen.clearScreen();
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -83,28 +91,34 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
 
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
-    accel = Controller.Axis3.position();
-    turn = Controller.Axis1.position();
+
+
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
+    accel = Controller.Axis1.position();
+    turn = Controller.Axis3.position();
     Drivetrain.arcade(accel, turn * turnMultiplier);
 
-    if(Controller.ButtonX.pressing()) {
+
+
+
+    if(Controller.ButtonL1.pressing()) {
+      IntakeMotorGroup.setVelocity(45, percent);
       IntakeMotorGroup.spin(forward);
-    } else if(Controller.ButtonB.pressing()) {
+    } else if(Controller.ButtonL2.pressing()) {
+      IntakeMotorGroup.setVelocity(100, percent);
       IntakeMotorGroup.spin(reverse);
     } else {
       IntakeMotorGroup.stop();
+      IntakeMotorGroup.setVelocity(45, percent);
     }
+
+
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
+    Brain.Screen.clearScreen();
   }
 }
 

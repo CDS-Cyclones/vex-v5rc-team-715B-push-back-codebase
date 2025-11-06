@@ -5,7 +5,7 @@ extern motor BackRightMotor;
 extern motor_group RightDriveSmart;
 extern motor BackLeftMotor;
 extern motor_group LeftDriveSmart;
-extern drivetrain Drivetrain;
+extern smartdrive Drivetrain;
 extern controller Controller;
 extern motor IntakeMotorLeft;
 extern motor IntakeMotorRight;

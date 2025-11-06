@@ -16,21 +16,21 @@ const double WHEELBASE = 266.7;
 
 
 //Right side declarations
-const int32_t BACK_RIGHT_MOTOR_PORT = PORT2;
-const bool BACK_RIGHT_MOTOR_REVERSED = true;
+const int32_t BACK_RIGHT_MOTOR_PORT = PORT12;
+const bool BACK_RIGHT_MOTOR_REVERSED = false;
 motor BackRightMotor = motor( BACK_RIGHT_MOTOR_PORT, BACK_RIGHT_MOTOR_REVERSED );
 
 //Left side declarations
-const int32_t BACK_LEFT_MOTOR_PORT = PORT1;
+const int32_t BACK_LEFT_MOTOR_PORT = PORT11;
 const bool BACK_LEFT_MOTOR_REVERSED = false;
 motor BackLeftMotor = motor( BACK_LEFT_MOTOR_PORT, BACK_LEFT_MOTOR_REVERSED );
 
 
 // Intake Motor declarations
-const int32_t INTAKE_MOTOR_PORT_LEFT = PORT3;
+const int32_t INTAKE_MOTOR_PORT_LEFT = PORT9;
 const bool INTAKE_MOTOR_REVERSED_LEFT = false;
 
-const int32_t INTAKE_MOTOR_PORT_RIGHT = PORT4;
+const int32_t INTAKE_MOTOR_PORT_RIGHT = PORT10;
 const bool INTAKE_MOTOR_REVERSED_RIGHT = false;
 
 motor IntakeMotorLeft = motor( INTAKE_MOTOR_PORT_LEFT, INTAKE_MOTOR_REVERSED_LEFT );
@@ -40,8 +40,9 @@ motor_group IntakeMotorGroup = motor_group( IntakeMotorLeft, IntakeMotorRight );
 
 
 // misc. definitions
-drivetrain Drivetrain = drivetrain(BackLeftMotor, BackRightMotor, WHEEL_CIRCUMFERENCE, TRACKWIDTH, WHEELBASE, DISTANCE_UNITS, INTERNAL_GEAR_RATIO);
-inertial InertialSensor = inertial( PORT5 );
+// drivetrain Drivetrain = drivetrain(BackLeftMotor, BackRightMotor, WHEEL_CIRCUMFERENCE, TRACKWIDTH, WHEELBASE, DISTANCE_UNITS, INTERNAL_GEAR_RATIO);
+inertial InertialSensor = inertial( PORT1 );
+smartdrive Drivetrain = smartdrive(BackLeftMotor,BackRightMotor,InertialSensor, WHEEL_CIRCUMFERENCE, TRACKWIDTH, WHEELBASE, DISTANCE_UNITS, INTERNAL_GEAR_RATIO);
 controller Controller = controller();
 
 /**
