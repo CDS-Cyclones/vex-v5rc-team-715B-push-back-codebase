@@ -82,8 +82,6 @@ void telemetry(void) {
 
 void autonomous(void) {
   calibrateInertial();
-  
-
 
   // Telemetry loop
   while (true) {
@@ -118,15 +116,21 @@ void usercontrol(void) {
     }
 
     // Intake Control
+    // fast intake for picking up
     if (Controller.ButtonL1.pressing()) {
-      IntakeMotorGroup.setVelocity(45, percent);
+      IntakeMotorGroup.setVelocity(85, percent);
       IntakeMotorGroup.spin(forward);
+      // outtake max speed
     } else if (Controller.ButtonL2.pressing()) {
       IntakeMotorGroup.setVelocity(100, percent);
       IntakeMotorGroup.spin(reverse);
-    } else {
+      // slow intake for scoring
+    } else if(Controller.ButtonR1.pressing()) {
+        IntakeMotorGroup.setVelocity(50, percent);
+        IntakeMotorGroup.spin(forward);
+      } else {
       IntakeMotorGroup.stop();
-      IntakeMotorGroup.setVelocity(45, percent);
+      IntakeMotorGroup.setVelocity(85, percent);
     }
 
     wait(20, msec);

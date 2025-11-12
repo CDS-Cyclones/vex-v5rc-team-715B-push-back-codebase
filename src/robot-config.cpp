@@ -17,18 +17,18 @@ const double WHEELBASE = 266.7;
 
 //Right side declarations
 const int32_t BACK_RIGHT_MOTOR_PORT = PORT12;
-const bool BACK_RIGHT_MOTOR_REVERSED = true;
+const bool BACK_RIGHT_MOTOR_REVERSED = false;
 motor BackRightMotor = motor( BACK_RIGHT_MOTOR_PORT, BACK_RIGHT_MOTOR_REVERSED );
 
 //Left side declarations
 const int32_t BACK_LEFT_MOTOR_PORT = PORT11;
-const bool BACK_LEFT_MOTOR_REVERSED = false;
+const bool BACK_LEFT_MOTOR_REVERSED = true;
 motor BackLeftMotor = motor( BACK_LEFT_MOTOR_PORT, BACK_LEFT_MOTOR_REVERSED );
 
 
 // Intake Motor declarations
 const int32_t INTAKE_MOTOR_PORT_LEFT = PORT9;
-const bool INTAKE_MOTOR_REVERSED_LEFT = false;
+const bool INTAKE_MOTOR_REVERSED_LEFT = true;
 
 const int32_t INTAKE_MOTOR_PORT_RIGHT = PORT10;
 const bool INTAKE_MOTOR_REVERSED_RIGHT = false;
