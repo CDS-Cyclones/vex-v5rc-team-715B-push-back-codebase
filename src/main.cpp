@@ -103,9 +103,16 @@ void usercontrol(void) {
   while (1) {
  
     // Drive control
-    accel = Controller.Axis3.position();
-    turn = Controller.Axis1.position();
-    Drivetrain.arcade(accel, turn * turnMultiplier);
+    // if inertal heading is greater than 160 and below 300 reverse controls, basically a scuffed field relative drive
+    if(InertialSensor.heading() > 160 && InertialSensor.heading() < 300){
+      accel = Controller.Axis3.position() * -1;
+      turn = Controller.Axis1.position();
+    }
+    else{
+      accel = Controller.Axis3.position();
+      turn = Controller.Axis1.position();
+    }
+    Drivetrain.arcade(accel , turn * turnMultiplier);
 
     // Telemetry loop
     telemetry();
