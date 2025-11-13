@@ -18,9 +18,14 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-double accel = 0;
+double accel_raw = 0;
 double turn = 0;
 const double_t turnMultiplier = 1;
+double headingDeg = 0;
+double headingRad = 0;
+double diff = 0;
+double accel_out = 0;
+bool facingBackwards = false;
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -103,17 +108,15 @@ void usercontrol(void) {
   while (1) {
  
     // Drive control
-    // if inertal heading is greater than 160 and below 300 reverse controls, basically a scuffed field relative drive
-    if(InertialSensor.heading() > 160 && InertialSensor.heading() < 300){
-      accel = Controller.Axis3.position() * -1;
-      turn = Controller.Axis1.position();
-    }
-    else{
-      accel = Controller.Axis3.position();
-      turn = Controller.Axis1.position();
-    }
-    Drivetrain.arcade(accel , turn * turnMultiplier);
+    headingDeg = InertialSensor.heading();
+    diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
+    facingBackwards = (diff < 90);
+    accel_raw = Controller.Axis3.position();
+    turn = Controller.Axis1.position();
+    accel_out = facingBackwards ? -accel_raw : accel_raw;
+    Drivetrain.arcade(accel_out, turn * turnMultiplier);
 
+    
     // Telemetry loop
     telemetry();
 
