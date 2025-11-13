@@ -79,10 +79,12 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void telemetry(void) {
+  headingDeg = InertialSensor.heading();
+  headingRad = headingDeg * (M_PI / 180.0);
   Brain.Screen.setCursor(1, 1);
   Controller.Screen.setCursor(1, 1);
-  Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
-  Controller.Screen.print("Heading: %.2f", InertialSensor.heading());
+  Brain.Screen.print("Drivetrain Heading: %.2f", headingDeg);
+  Controller.Screen.print("Heading: %.2f", headingDeg);
 }
 
 void autonomous(void) {
@@ -105,10 +107,11 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  while (1) {
- 
+  while (1) {    
+    // Telemetry loop
+    telemetry();
+
     // Drive control
-    headingDeg = InertialSensor.heading();
     diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
     facingBackwards = (diff < 90);
     accel_raw = Controller.Axis3.position();
@@ -116,9 +119,7 @@ void usercontrol(void) {
     accel_out = facingBackwards ? -accel_raw : accel_raw;
     Drivetrain.arcade(accel_out, turn * turnMultiplier);
 
-    
-    // Telemetry loop
-    telemetry();
+
 
     // Inertial reset heading
     if (Controller.ButtonY.pressing()) {
