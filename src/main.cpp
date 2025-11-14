@@ -59,8 +59,8 @@ void pre_auton(void) {
   BackLeftMotor.setBrake(brake);
   BackRightMotor.setBrake(brake);
   IntakeMotorGroup.setStopping(coast);
-  Drivetrain.setDriveVelocity(100, percent);
-  Drivetrain.setTurnVelocity(100, percent);
+  Drivetrain.setDriveVelocity(75, percent);
+  Drivetrain.setTurnVelocity(75, percent);
   Drivetrain.setTimeout(3, seconds);
   IntakeMotorGroup.setVelocity(45, percent);
 
@@ -106,19 +106,21 @@ void autonomous(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
+void reverseCompliantDrive(void){
+    diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
+    facingBackwards = (diff < 90);
+    accel_raw = Controller.Axis3.position() * -1;
+    turn = Controller.Axis1.position();
+    accel_out = facingBackwards ? -accel_raw : accel_raw;
+    Drivetrain.arcade(accel_out, turn * turnMultiplier);
+}
+
 void usercontrol(void) {
   while (1) {    
     // Telemetry loop
     telemetry();
-
     // Drive control
-    diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
-    facingBackwards = (diff < 90);
-    accel_raw = Controller.Axis3.position();
-    turn = Controller.Axis1.position();
-    accel_out = facingBackwards ? -accel_raw : accel_raw;
-    Drivetrain.arcade(accel_out, turn * turnMultiplier);
-
+    reverseCompliantDrive();
 
 
     // Inertial reset heading
@@ -139,7 +141,11 @@ void usercontrol(void) {
     } else if(Controller.ButtonR1.pressing()) {
         IntakeMotorGroup.setVelocity(50, percent);
         IntakeMotorGroup.spin(forward);
-      } else {
+      // spin only one side to line up flaps
+    } else if(Controller.ButtonR2.pressing()) {
+        IntakeMotorRight.setVelocity(25, percent);
+        IntakeMotorRight.spin(forward);
+    } else {
       IntakeMotorGroup.stop();
       IntakeMotorGroup.setVelocity(85, percent);
     }
