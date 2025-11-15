@@ -18,9 +18,14 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-double accel = 0;
+double accel_raw = 0;
 double turn = 0;
 const double_t turnMultiplier = 1;
+double headingDeg = 0;
+double headingRad = 0;
+double diff = 0;
+double accel_out = 0;
+bool facingBackwards = false;
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -54,8 +59,8 @@ void pre_auton(void) {
   BackLeftMotor.setBrake(brake);
   BackRightMotor.setBrake(brake);
   IntakeMotorGroup.setStopping(coast);
-  Drivetrain.setDriveVelocity(100, percent);
-  Drivetrain.setTurnVelocity(100, percent);
+  Drivetrain.setDriveVelocity(75, percent);
+  Drivetrain.setTurnVelocity(75, percent);
   Drivetrain.setTimeout(3, seconds);
   IntakeMotorGroup.setVelocity(45, percent);
 
@@ -74,10 +79,12 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void telemetry(void) {
+  headingDeg = InertialSensor.heading();
+  headingRad = headingDeg * (M_PI / 180.0);
   Brain.Screen.setCursor(1, 1);
   Controller.Screen.setCursor(1, 1);
-  Brain.Screen.print("Drivetrain Heading: %.2f", InertialSensor.heading());
-  Controller.Screen.print("Heading: %.2f", InertialSensor.heading());
+  Brain.Screen.print("Drivetrain Heading: %.2f", headingDeg);
+  Controller.Screen.print("Heading: %.2f", headingDeg);
 }
 
 void autonomous(void) {
@@ -99,23 +106,22 @@ void autonomous(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void usercontrol(void) {
-  while (1) {
- 
-    // Drive control
-    // if inertal heading is greater than 160 and below 300 reverse controls, basically a scuffed field relative drive
-    if(InertialSensor.heading() > 160 && InertialSensor.heading() < 300){
-      accel = Controller.Axis3.position() * -1;
-      turn = Controller.Axis1.position();
-    }
-    else{
-      accel = Controller.Axis3.position();
-      turn = Controller.Axis1.position();
-    }
-    Drivetrain.arcade(accel , turn * turnMultiplier);
+void reverseCompliantDrive(void){
+    diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
+    facingBackwards = (diff < 90);
+    accel_raw = Controller.Axis3.position() * -1;
+    turn = Controller.Axis1.position();
+    accel_out = facingBackwards ? -accel_raw : accel_raw;
+    Drivetrain.arcade(accel_out, turn * turnMultiplier);
+}
 
+void usercontrol(void) {
+  while (1) {    
     // Telemetry loop
     telemetry();
+    // Drive control
+    reverseCompliantDrive();
+
 
     // Inertial reset heading
     if (Controller.ButtonY.pressing()) {
@@ -135,7 +141,11 @@ void usercontrol(void) {
     } else if(Controller.ButtonR1.pressing()) {
         IntakeMotorGroup.setVelocity(50, percent);
         IntakeMotorGroup.spin(forward);
-      } else {
+      // spin only one side to line up flaps
+    } else if(Controller.ButtonR2.pressing()) {
+        IntakeMotorRight.setVelocity(25, percent);
+        IntakeMotorRight.spin(forward);
+    } else {
       IntakeMotorGroup.stop();
       IntakeMotorGroup.setVelocity(85, percent);
     }
