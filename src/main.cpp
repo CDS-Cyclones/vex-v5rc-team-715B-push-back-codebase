@@ -90,6 +90,17 @@ void telemetry(void) {
 void autonomous(void) {
   calibrateInertial();
 
+    //TODO: Tune values cause this is NOT tested
+  Drivetrain.turnToHeading(90, deg);
+  Drivetrain.driveFor(forward, 500, mm);
+  Drivetrain.turnToHeading(0, deg);
+  Drivetrain.driveFor(reverse, 500, mm);
+  IntakeMotorGroup.setVelocity(100, percent);
+  IntakeMotorGroup.spinFor(forward, 2, seconds);
+  Drivetrain.driveFor(forward, 2000, mm);
+  IntakeMotorGroup.setVelocity(50, percent);
+  IntakeMotorGroup.spinFor(forward, 5, seconds);
+
   // Telemetry loop
   while (true) {
     telemetry();
