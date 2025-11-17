@@ -65,7 +65,6 @@ void pre_auton(void) {
   IntakeMotorGroup.setVelocity(45, percent);
 
 
-
 }
 
 /*---------------------------------------------------------------------------*/
@@ -90,16 +89,17 @@ void telemetry(void) {
 void autonomous(void) {
   calibrateInertial();
 
-    //TODO: Tune values cause this is NOT tested
-  Drivetrain.turnToHeading(90, deg);
-  Drivetrain.driveFor(forward, 500, mm);
-  Drivetrain.turnToHeading(0, deg);
-  Drivetrain.driveFor(reverse, 500, mm);
-  IntakeMotorGroup.setVelocity(100, percent);
-  IntakeMotorGroup.spinFor(forward, 2, seconds);
-  Drivetrain.driveFor(forward, 2000, mm);
-  IntakeMotorGroup.setVelocity(50, percent);
-  IntakeMotorGroup.spinFor(forward, 5, seconds);
+  //TODO: Tune values cause this is NOT tested
+  Drivetrain.driveFor(forward, 20, inches,true);
+  Drivetrain.turnFor(left,90,degrees,false);
+  wait(0.75,seconds);
+  Drivetrain.stop();
+  // Drivetrain.driveFor(reverse, 500, mm);
+  // IntakeMotorGroup.setVelocity(100, percent);
+  // IntakeMotorGroup.spinFor(forward, 2, seconds);
+  // Drivetrain.driveFor(forward, 2000, mm);
+  // IntakeMotorGroup.setVelocity(50, percent);
+  // IntakeMotorGroup.spinFor(forward, 5, seconds);
 
   // Telemetry loop
   while (true) {
@@ -168,11 +168,13 @@ void usercontrol(void) {
 }
 
 int main() {
-  // Run the pre-autonomous function.
-  pre_auton();
+
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
+
+  // Run the pre-autonomous function.
+  pre_auton();
 
   // Prevent main from exiting with an infinite loop.
   while (true) {

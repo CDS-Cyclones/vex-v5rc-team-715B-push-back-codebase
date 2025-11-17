@@ -9,7 +9,7 @@ brain Brain;
 const distanceUnits DISTANCE_UNITS = mm;
 
 const gearSetting DRIVETRAIN_MOTOR_GEAR_RATIO = ratio18_1;
-const double WHEEL_CIRCUMFERENCE = 3.25 * atan(1) * 4;
+const double WHEEL_CIRCUMFERENCE = 330.2;
 const double TRACKWIDTH = 368.3;
 const double INTERNAL_GEAR_RATIO = 1;
 const double WHEELBASE = 266.7;
