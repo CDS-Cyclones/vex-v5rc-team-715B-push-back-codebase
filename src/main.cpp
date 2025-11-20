@@ -21,6 +21,8 @@ competition Competition;
 double accel_raw = 0;
 double turn = 0;
 const double_t turnMultiplier = 1;
+const double_t enterBackward = 80;
+const double_t exitBackward  = 100;
 double headingDeg = 0;
 double headingRad = 0;
 double diff = 0;
@@ -119,7 +121,17 @@ void autonomous(void) {
 
 void reverseCompliantDrive(void){
     diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
-    facingBackwards = (diff < 90);
+ if (facingBackwards) {
+        // only leave backward mode if we pass the higher threshold
+        if (diff > exitBackward) {
+            facingBackwards = false;
+        }
+    } else {
+        // only enter backward mode if we pass the lower threshold
+        if (diff < enterBackward) {
+            facingBackwards = true;
+        }
+    }
     accel_raw = Controller.Axis3.position() * -1;
     turn = Controller.Axis1.position();
     accel_out = facingBackwards ? -accel_raw : accel_raw;
@@ -132,7 +144,6 @@ void usercontrol(void) {
     telemetry();
     // Drive control
     reverseCompliantDrive();
-
 
     // Inertial reset heading
     if (Controller.ButtonY.pressing()) {
