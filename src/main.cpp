@@ -40,6 +40,9 @@ bool facingBackwards = false;
 /*---------------------------------------------------------------------------*/
 
 void calibrateInertial() {
+  BackLeftMotor.setBrake(brake);
+  BackRightMotor.setBrake(brake);
+  FrontRightMotor.setBrake(brake);
   InertialSensor.setHeading(0, deg);
   Drivetrain.setHeading(0, deg);
   InertialSensor.calibrate();
@@ -86,6 +89,7 @@ void telemetry(void) {
   Controller.Screen.setCursor(1, 1);
   Brain.Screen.print("Drivetrain Heading: %.2f", headingDeg);
   Controller.Screen.print("Heading: %.2f", headingDeg);
+  FrontLeftMotor.setBrake(brake);
 }
 
 void autonomous(void) {
@@ -132,7 +136,7 @@ void reverseCompliantDrive(void){
             facingBackwards = true;
         }
     }
-    accel_raw = Controller.Axis3.position() * -1;
+    accel_raw = Controller.Axis3.position();
     turn = Controller.Axis1.position();
     accel_out = facingBackwards ? -accel_raw : accel_raw;
     Drivetrain.arcade(accel_out, turn * turnMultiplier);
