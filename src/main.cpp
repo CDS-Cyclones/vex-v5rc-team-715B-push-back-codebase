@@ -94,19 +94,17 @@ void telemetry(void) {
 
 void autonomous(void) {
   calibrateInertial();
-
-  //TODO: Tune values cause this is NOT tested
-  Drivetrain.driveFor(forward, 20, inches,true);
+  Drivetrain.driveFor(reverse, 20, inches,true);
   Drivetrain.turnFor(left,90,degrees,false);
   wait(0.75,seconds);
   Drivetrain.stop();
-  // Drivetrain.driveFor(reverse, 500, mm);
-  // IntakeMotorGroup.setVelocity(100, percent);
-  // IntakeMotorGroup.spinFor(forward, 2, seconds);
-  // Drivetrain.driveFor(forward, 2000, mm);
-  // IntakeMotorGroup.setVelocity(50, percent);
-  // IntakeMotorGroup.spinFor(forward, 5, seconds);
-
+  Drivetrain.driveFor(reverse,30,inches,true);
+  Drivetrain.turnFor(right,90,degrees,false);
+  wait(0.80,seconds);
+  Drivetrain.stop();
+  Drivetrain.driveFor(reverse,10,inches,true);
+  IntakeMotorGroup.setVelocity(50, percent);
+  IntakeMotorGroup.spin(forward);
   // Telemetry loop
   while (true) {
     telemetry();
@@ -124,7 +122,7 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void reverseCompliantDrive(void){
-    diff = fabs(fmod(headingDeg - 180 + 360, 360) - 180);
+    diff = fabs(fmod(headingDeg - 200 + 360, 360) - 180);
  if (facingBackwards) {
         // only leave backward mode if we pass the higher threshold
         if (diff > exitBackward) {
